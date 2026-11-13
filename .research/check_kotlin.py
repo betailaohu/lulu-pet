@@ -100,3 +100,5 @@ for path in FILES:
                     print("[WARN 残留引用]", rel, "->", bad, "|", line.strip()[:90])
 
 print("checked {} Kotlin files, {} structural failures".format(len(FILES), failures))
+
+raise SystemExit(1 if failures else 0)

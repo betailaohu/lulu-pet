@@ -224,3 +224,5 @@ print("[INFO] 素材状态: {}".format(
     "仍是占位立绘（用 install_assets.py 安装正式素材）" if is_placeholder else "已安装正式立绘"
 ))
 print("\n=== {} passed, {} failed ===".format(len(ok), len(bad)))
+
+raise SystemExit(1 if bad else 0)
