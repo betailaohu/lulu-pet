@@ -1,25 +1,46 @@
 package com.lulu.pet
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
+import android.webkit.CookieManager
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.lulu.pet.settings.SettingsActivity
 
+/**
+ * 主界面就是网页版那一份：上面是噜噜，下面是聊天框。
+ *
+ * 走网页而不是原生重写，是因为云端登录与模型调用只有官方 Web SDK 这一条路 ——
+ * 原生自己拼 REST 属于未公开用法，接口一变就崩。桌面悬浮窗仍然保持原生（网页做不到）。
+ */
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var web: WebView
+    private lateinit var offline: View
 
     private val overlayPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            refreshButtons()
+            if (Settings.canDrawOverlays(this)) startPet() else Toast.makeText(
+                this, R.string.overlay_permission_hint, Toast.LENGTH_SHORT
+            ).show()
         }
 
     private val notificationPermissionLauncher =
@@ -27,22 +48,76 @@ class MainActivity : AppCompatActivity() {
             startPet()
         }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.btn_start).setOnClickListener { startPet() }
-        findViewById<Button>(R.id.btn_grant).setOnClickListener { requestOverlayPermission() }
-        findViewById<Button>(R.id.btn_settings).setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+        web = findViewById(R.id.web)
+        offline = findViewById(R.id.offline)
+
+        web.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            databaseEnabled = true
+            cacheMode = WebSettings.LOAD_DEFAULT
+            mediaPlaybackRequiresUserGesture = false
+            // 加上标记，网页据此隐藏在 WebView 里走不通的微信扫码登录
+            userAgentString = userAgentString + " LuluPetAndroid"
         }
 
-        refreshButtons()
+        CookieManager.getInstance().setAcceptCookie(true)
+        CookieManager.getInstance().setAcceptThirdPartyCookies(web, true)
+
+        web.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                offline.visibility = View.GONE
+            }
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?,
+            ) {
+                if (request?.isForMainFrame == true) offline.visibility = View.VISIBLE
+            }
+        }
+        web.webChromeClient = WebChromeClient()
+
+        web.loadUrl(APP_URL)
+
+        findViewById<Button>(R.id.btn_retry).setOnClickListener {
+            offline.visibility = View.GONE
+            web.loadUrl(APP_URL)
+        }
+        findViewById<Button>(R.id.btn_more).setOnClickListener { showMenu() }
     }
 
     override fun onResume() {
         super.onResume()
-        refreshButtons()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (web.canGoBack()) web.goBack() else super.onBackPressed()
+    }
+
+    private fun showMenu() {
+        val running = PetService.isRunning()
+        val items = arrayOf(
+            if (running) "停止桌面悬浮" else "在桌面显示噜噜",
+            "设置",
+            "重新加载页面"
+        )
+        AlertDialog.Builder(this)
+            .setItems(items) { _, which ->
+                when (which) {
+                    0 -> if (running) stopPet() else startPet()
+                    1 -> startActivity(Intent(this, SettingsActivity::class.java))
+                    2 -> web.reload()
+                }
+            }
+            .show()
     }
 
     private fun startPet() {
@@ -64,7 +139,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             startService(intent)
         }
-        refreshButtons()
+        Toast.makeText(this, "噜噜已经跑到桌面上了", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun stopPet() {
+        stopService(Intent(this, PetService::class.java).setAction(PetService.ACTION_STOP))
+        Toast.makeText(this, "桌面上的噜噜收回来了", Toast.LENGTH_SHORT).show()
     }
 
     private fun requestOverlayPermission() {
@@ -79,31 +159,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun refreshButtons() {
-        val running = PetService.isRunning()
-        val overlayOk = Settings.canDrawOverlays(this)
-        val startBtn = findViewById<Button>(R.id.btn_start)
-        val grantBtn = findViewById<Button>(R.id.btn_grant)
-        val status = findViewById<TextView>(R.id.tv_status)
-
-        if (running) {
-            startBtn.text = getString(R.string.stop_pet)
-            startBtn.setOnClickListener {
-                stopService(Intent(this, PetService::class.java).setAction(PetService.ACTION_STOP))
-                refreshButtons()
-            }
-            grantBtn.visibility = android.view.View.GONE
-            status.text = "桌宠正在运行，去桌面看看吧"
-        } else {
-            startBtn.text = getString(R.string.start_pet)
-            startBtn.setOnClickListener { startPet() }
-            if (overlayOk) {
-                grantBtn.visibility = android.view.View.GONE
-                status.text = "悬浮窗权限已授予，点击启动桌宠"
-            } else {
-                grantBtn.visibility = android.view.View.VISIBLE
-                status.text = getString(R.string.overlay_permission_hint)
-            }
-        }
+    companion object {
+        /** 线上网页版地址；带 sharecode 才能在发布域名下正常访问。 */
+        const val APP_URL =
+            "https://wbapp-gbyys9j25fx0srxlke1txs.app.workbuddy.host/?sharecode=GGII4BMCNO"
     }
 }
