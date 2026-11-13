@@ -794,7 +794,33 @@
     }
   }
 
+  // 让「添加到主屏幕」的图标保留分享码：start_url 必须是当前完整地址，
+  // 否则从桌面图标打开会丢掉 sharecode 而拿到 403「链接不完整」。
+  function injectManifest() {
+    try {
+      var m = {
+        name: '水豚噜噜',
+        short_name: '噜噜',
+        start_url: location.href,
+        scope: location.pathname,
+        display: 'standalone',
+        background_color: '#FBF3E9',
+        theme_color: '#FBF3E9',
+        icons: [
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+        ]
+      };
+      var url = URL.createObjectURL(new Blob([JSON.stringify(m)], { type: 'application/manifest+json' }));
+      var l = document.createElement('link');
+      l.rel = 'manifest';
+      l.href = url;
+      document.head.appendChild(l);
+    } catch (e) { /* 不支持就当没有，不影响主流程 */ }
+  }
+
   (async function main() {
+    injectManifest();
     try {
       await loadConfig();
     } catch (e) {
