@@ -54,6 +54,26 @@ if os.path.isdir(IOS_RES):
         if os.path.isfile(src):
             shutil.copy2(src, os.path.join(IOS_RES, cfg))
 
+WEB = os.path.join(ROOT, "web")
+web_n = 0
+if os.path.isdir(WEB):
+    web_assets = os.path.join(WEB, "assets")
+    web_frames = os.path.join(web_assets, "frames")
+    os.makedirs(web_frames, exist_ok=True)
+    for name in os.listdir(web_frames):
+        if name.lower().endswith((".png", ".webp")):
+            os.remove(os.path.join(web_frames, name))
+    for name in sorted(os.listdir(SRC)):
+        if name.startswith("frame-") and name.lower().endswith((".png", ".webp")):
+            shutil.copy2(os.path.join(SRC, name), os.path.join(web_frames, name))
+            web_n += 1
+    for cfg in ("manifest.json", "state.json"):
+        src = os.path.join(SHARED, cfg)
+        if os.path.isfile(src):
+            shutil.copy2(src, os.path.join(web_assets, cfg))
+
 print("synced {} frames + character.* + shared/*.json -> {}".format(n, ASSETS))
 if ios_n:
     print("synced {} frames + shared/*.json -> {}".format(ios_n, IOS_RES))
+if web_n:
+    print("synced {} frames + shared/*.json -> {}".format(web_n, WEB))

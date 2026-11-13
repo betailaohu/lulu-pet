@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FBF3E9">
+<title>水豚噜噜</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <header id="hud">
+    <div class="toprow">
+      <div class="who">
+        <span id="phaseLabel">慢慢营业</span>
+        <span id="syncDot" class="dot" title="存档状态"></span>
+      </div>
+      <button id="btnSettings" aria-label="设置">···</button>
+    </div>
+    <div class="bars">
+      <div class="bar" data-stat="satiety"><i></i><b>饱食度</b><span>--</span></div>
+      <div class="bar" data-stat="mood"><i></i><b>心情</b><span>--</span></div>
+      <div class="bar" data-stat="affinity"><i></i><b>亲密度</b><span>--</span></div>
+    </div>
+  </header>
+
+  <main id="stage">
+    <div id="bubble" class="bubble" aria-live="polite"></div>
+    <div id="petWrap">
+      <img id="pet" alt="水豚噜噜" draggable="false">
+    </div>
+    <div id="effects"></div>
+    <div id="ground"></div>
+  </main>
+
+  <footer id="actions">
+    <button class="act" data-act="pat"><span>摸摸</span></button>
+    <button class="act" data-act="feed"><span>喂草</span></button>
+    <button class="act" data-act="play"><span>逗它</span></button>
+  </footer>
+
+  <section id="login" class="sheet-inline">
+    <div class="card">
+      <h1>水豚噜噜</h1>
+      <p class="sub">登录后，这只噜噜的饱食度、心情和亲密度会存在云端 —— 你在手机上、电脑上打开，看到的是同一只。</p>
+      <button id="btnWechat" class="primary">微信一键登录</button>
+      <button id="btnWorkbuddy" class="ghost">使用 WorkBuddy 账号登录</button>
+      <p id="loginErr" class="err"></p>
+      <p class="tiny">非官方同人作品 · 用你自己的账号，数据只对你可见</p>
+    </div>
+  </section>
+
+  <section id="settings" class="sheet hidden">
+    <div class="card">
+      <h2>设置</h2>
+      <label class="row"><span>自由走动</span><input type="checkbox" id="optWalk" checked></label>
+      <label class="row"><span>偶尔说点辣的</span><input type="checkbox" id="optSpicy" checked></label>
+      <label class="row"><span>活跃程度</span><input type="range" id="optIntensity" min="0.5" max="1.8" step="0.1" value="1"></label>
+      <div class="row"><span>存档</span><button id="btnSync" class="mini">立即同步</button></div>
+      <button id="btnLogout" class="ghost danger">退出登录</button>
+      <button id="btnCloseSettings" class="primary">知道了</button>
+    </div>
+  </section>
+
+  <div id="toast"></div>
+</div>
+
+<script src="vendor/workbuddy-cloud.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -21,6 +21,8 @@ assets/lulu/ai_generated/
 
 # ---- 本地产物 / 编辑器 ----
 .workbuddy/memory/
+.workbuddy/applications.yaml
+.wbapp_*.genie
 .DS_Store
 Thumbs.db
 *.log
