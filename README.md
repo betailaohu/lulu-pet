@@ -84,6 +84,7 @@ F:\手机桌宠\
 - [ ] **逐张重绘 21 张复用帧**（可选优化）：按 `绘制清单.md` 单独生成后 `python assets/lulu/install_assets.py <素材目录> --force`
 - [x] **iOS 设置页 + 小组件数据源**：`SettingsView.swift` 展示三条数值 / 共享通道状态 / 刷新小组件 / 结束灵动岛 / 重置；`PetState.publish()` 每次变化写 App Group 并 `reloadAllTimelines()`
 - [x] **iOS 包通道就绪**：`.github/workflows/ios-build.yml`（macOS runner 出未签名 ipa）+ `ios/打包与安装指南.md`（Sideloadly 重签装机），已按 iOS 26 / iPhone 17 调过部署目标与 API
+- [x] **iOS 出包加固**：修掉 `project.yml` 里 `info:`/`entitlements:` 会覆写手写 plist 的坑；补 `import UIKit`；CI 默认用 `ios/scripts/make_apponly_project.py` 生成「纯主 App」spec（免费账号可侧签）
 - [ ] **第一次跑 iOS CI**：需要你先把仓库推到 GitHub（命令见指南），Swift 代码至今没被真编译过
 
 ---
@@ -112,13 +113,15 @@ cd android && ./gradlew assembleDebug
 
 ## 怎么拿 iOS 包
 
-Windows 编不了 iOS，`.ipa` 必须由 macOS 产出。走 GitHub Actions 就绕开了这个限制：
+**这一步我替不了你**：`.ipa` 必须由 macOS + Xcode 产出，Windows 上没有这条工具链；装进 iPhone 还需要你自己的 Apple ID 签名。代码、CI、签名方案都已就绪，缺的只是按下按钮。
 
-1. 仓库推到 GitHub → Actions → **iOS Build** → Run workflow
-2. 下载 artifact `LuluPet-unsigned-ipa`（未签名）
+1. 仓库推到 GitHub（本地已 init + commit，`git remote add` 后 `git push` 即可，会自动触发构建）
+2. Actions → **iOS Build** → 下载 artifact `LuluPet-unsigned-ipa`（未签名）
 3. Windows 上装 **Apple Devices** + **Sideloadly**，用你的 Apple ID 重签后装进 iPhone
 
-完整步骤、免费 Apple ID 的 7 天期限 / 3 个 App 上限 / 拿不到 App Groups 这些坑，都写在 `ios/打包与安装指南.md`。
+**默认出的是「纯主 App」包**，不含桌面小组件与灵动岛。原因很硬：免费 Apple ID 只能签主 App，包里内嵌的 `PetWidget.appex` 会让重签直接失败；免费账号也拿不到 App Groups，小组件本来就读不到养成数值。有 99 美元/年开发者账号时勾 `include_widget` + `include_app_group` 出全量包。
+
+完整步骤、免费 Apple ID 的 7 天期限 / 3 个 App 上限 / 常见报错对照，都写在 `ios/打包与安装指南.md`。
 
 ---
 
@@ -156,4 +159,4 @@ Windows 编不了 iOS，`.ipa` 必须由 macOS 产出。走 GitHub Actions 就�
 | 上游来源与改造清单 | `android/ORIGIN.md` |
 | 双端配置字段说明 | `shared/README.md` |
 | 素材规格与替换流程 | `assets/lulu/README.md` |
-| iOS 三 target 怎么建、平台限制 | `ios/README.md` |
+| iOS 2 个 target 怎么建、平台限制 | `ios/README.md` |

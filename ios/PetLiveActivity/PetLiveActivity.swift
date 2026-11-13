@@ -77,6 +77,9 @@ struct LuluLiveActivity: Widget {
 @available(iOS 16.1, *)
 enum PetLiveActivityManager {
     static func startOrUpdate(snapshot: AppGroup.Snapshot) {
+        // 纯主 App 包（免费账号侧载）里没有 Widget Extension，
+        // 没有 ActivityConfiguration 也就没有灵动岛 UI，直接跳过，免得每次刷新都抛异常。
+        guard Bundle.main.builtInPlugInsURL != nil else { return }
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
 
         let state = PetActivityAttributes.ContentState(

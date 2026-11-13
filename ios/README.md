@@ -8,6 +8,10 @@
 
 iOS 上**做不了全局悬浮窗**（沙盒限制）。采用的形态是：**主 App 完整互动 + 桌面/锁屏小组件 + 灵动岛 Live Activity**，与 Android 共用同一套素材和同一份状态配置。
 
+> **用免费 Apple ID 侧载时，包里默认不带小组件与灵动岛。**
+> 因为免费账号只能给主 App 建 profile（内嵌 `PetWidget.appex` 会让重签失败），也拿不到 App Groups（小组件读不到数值）。
+> CI 默认调用 `scripts/make_apponly_project.py` 生成只含 `PetApp` 的 spec；有付费开发者账号时用原始 `project.yml` 出全量包。
+
 ## 架构修正（重要）
 
 早先规划写的是「三个 target」，实际应该是 **2 个 target**：
