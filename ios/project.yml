@@ -1,0 +1,87 @@
+name: LuluPet
+options:
+  bundleIdPrefix: com.lulu.pet
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: zh-Hans
+  createIntermediateGroups: true
+
+settings:
+  base:
+    # 必须是 5.0 / 6.0 这种合法语言版本值。
+    # 写 "5.9" 会让 swiftc 报 invalid value for -swift-version，整个工程编不过。
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_BITCODE: "NO"
+    CLANG_ENABLE_MODULES: "YES"
+    GENERATE_INFOPLIST_FILE: "NO"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SUPPORTS_MACCATALYST: "NO"
+    SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: "NO"
+  configs:
+    Debug:
+      SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+    Release:
+      SWIFT_OPTIMIZATION_LEVEL: "-O"
+      SWIFT_COMPILATION_MODE: "wholemodule"
+
+# 只有两个 target：主 App + Widget Extension。
+# Live Activity 的 UI 必须由 Widget Extension 里的 ActivityConfiguration 提供，
+# 所以 PetLiveActivity/ 的代码被两个 target 一起编译，不是独立 extension。
+targets:
+  PetApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: PetApp
+      - path: Shared
+      - path: PetLiveActivity
+      - path: Resources
+    entitlements:
+      path: PetApp/PetApp.entitlements
+    info:
+      path: PetApp/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lulu.pet.app
+        INFOPLIST_FILE: PetApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: PetApp/PetApp.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - target: PetWidget
+        embed: true
+
+  PetWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: PetWidget
+      - path: Shared
+      - path: PetLiveActivity
+      - path: Resources
+        excludes:
+          - "Assets.xcassets"   # 图标只属于主 App，扩包里再编一份会报 AppIcon 缺失
+    entitlements:
+      path: PetWidget/PetWidget.entitlements
+    info:
+      path: PetWidget/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lulu.pet.widget
+        INFOPLIST_FILE: PetWidget/Info.plist
+        CODE_SIGN_ENTITLEMENTS: PetWidget/PetWidget.entitlements
+
+# 显式声明 scheme：CI 里 `xcodebuild -scheme PetApp` 必须有它，
+# 否则只能靠 Xcode 打开时自动生成的 scheme，命令行构建会报 scheme not found。
+schemes:
+  PetApp:
+    build:
+      targets:
+        PetApp: all
+    run:
+      config: Debug
+    archive:
+      config: Release

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "character": {
+    "id": "lulu",
+    "displayName": "水豚噜噜",
+    "note": "非官方同人形象。当前 assets/lulu/ 为程序生成的占位立绘，正式素材按同名覆盖即可。"
+  },
+  "assetSpec": {
+    "canvas": [512, 512],
+    "anchor": [256, 480],
+    "format": "RGBA PNG 或 WebP",
+    "naming": "frame-<frameId>.png",
+    "directory": "assets/lulu/",
+    "rule": "每个 frameId 一张静态立绘；动感由 duration 定时切换 + 程序化位移/缩放/粒子补足，不要求逐帧序列动画。",
+    "placeholder": true,
+    "replaceHint": "替换时保持画布尺寸、锚点和文件名不变，双端无需改代码。"
+  },
+  "frameFiles": [
+    "neutral", "blink", "angry", "ciallo", "ciallo-b", "coffee", "cry", "feed",
+    "fly", "goAway", "hungry", "panic", "pat", "pressure", "price", "rival",
+    "shock", "shy", "sit", "sleep", "smug", "startle", "stranded", "stretch",
+    "think", "toy", "trip", "walk", "walk-b", "wash", "work",
+    "dance", "cheer", "wonder", "nap", "jump"
+  ],
+  "frameAliases": {
+    "dream": "sleep",
+    "dizzy": "shock",
+    "jump": "fly"
+  },
+  "restingFrame": {
+    "default": "neutral",
+    "sleep": "sleep"
+  },
+  "behaviors": {
+    "walk":     { "scene": "walk",     "expression": "happy",    "icon": "✦",  "duration": 7200, "line": "慢慢走一圈，反正也不着急。", "frame": "walk" },
+    "wash":     { "scene": "wash",     "expression": "focused",  "icon": "✦",  "duration": 5000, "line": "泡个澡，水温刚刚好。",       "frame": "wash" },
+    "work":     { "scene": "work",     "expression": "tired",    "icon": "💢", "duration": 4500, "line": "……先趴一会儿再说。",       "frame": "work" },
+    "coffee":   { "scene": "coffee",   "expression": "focused",  "icon": "☕", "duration": 5200, "line": "喝口热的，困了就睡。",     "frame": "coffee" },
+    "toy":      { "scene": "toy",      "expression": "happy",    "icon": "♡",  "duration": 5200, "line": "抱着橘子发会儿呆。",       "frame": "toy" },
+    "sleep":    { "scene": "sleep",    "expression": "sleep",    "icon": "Z",  "duration": 9000, "line": "我先睡了，有事明天讲。",   "frame": "sleep" },
+    "dream":    { "scene": "sleep",    "expression": "sleep",    "icon": "☆",  "duration": 7200, "line": "梦里有一整片温泉。",       "frame": "sleep" },
+    "hungry":   { "scene": "hungry",   "expression": "worried",  "icon": "🍚", "duration": 3600, "line": "草……好像还没送来。",       "frame": "hungry" },
+    "sit":      { "scene": "sit",      "expression": "content",  "icon": "♪",  "duration": 4800, "line": "坐好了，不动也挺好。",     "frame": "sit" },
+    "pat":      { "scene": "pat",      "expression": "shy",      "icon": "♡",  "duration": 900,  "line": "嗯……可以，只许摸一下。",   "frame": "pat", "trigger": "tap" },
+    "shy":      { "scene": "shy",      "expression": "shy",      "icon": "♡",  "duration": 1700, "line": "别、别一直盯着看嘛。",     "frame": "shy" },
+    "trip":     { "scene": "stranded", "expression": "shock",    "icon": "‼",  "duration": 1200, "line": "啊，脚滑了一下。",         "frame": "trip" },
+    "feed":     { "scene": "feed",     "expression": "happy",    "icon": "🍚", "duration": 1300, "line": "有吃的？那我不生气了。",   "frame": "feed", "trigger": "tap" },
+    "think":    { "scene": "work",     "expression": "confused", "icon": "?",  "duration": 1500, "line": "想了三秒，决定放弃思考。", "frame": "think" },
+    "smug":     { "scene": "smug",     "expression": "smug",     "icon": "✦",  "duration": 2200, "line": "我什么都不做，也很厉害吧。", "frame": "smug" },
+    "angry":    { "scene": "angry",    "expression": "angry",    "icon": "💢", "duration": 2100, "line": "……（缓缓把头转过去）",     "frame": "angry" },
+    "ciallo":   { "scene": "ciallo",   "expression": "wink",     "icon": "☆",  "duration": 1900, "line": "噜～",                     "frame": "ciallo", "multiFrame": true },
+    "fly":      { "scene": "fly",      "expression": "happy",    "icon": "✈",  "duration": 2400, "line": "偶尔也想蹦一下。",         "frame": "fly" },
+    "price":    { "scene": "price",    "expression": "smug",     "icon": "¥",  "duration": 2300, "line": "我很好养的，一把草就够。", "frame": "price" },
+    "panic":    { "scene": "panic",    "expression": "sweat",    "icon": "💦", "duration": 1900, "line": "稍、稍微有点慌。",         "frame": "panic" },
+    "rival":    { "scene": "rival",    "expression": "angry",    "icon": "⚡", "duration": 2400, "line": "隔壁那只……算了，不比了。", "frame": "rival" },
+    "shock":    { "scene": "shock",    "expression": "shock",    "icon": "‼",  "duration": 2500, "line": "诶？",                     "frame": "shock" },
+    "pressure": { "scene": "pressure", "expression": "worried",  "icon": "☁",  "duration": 2200, "line": "压力？泡个热水就没了。",   "frame": "pressure" },
+    "stranded": { "scene": "stranded", "expression": "cry",      "icon": "💧", "duration": 2200, "line": "搁浅了，谁来推我一下。",   "frame": "stranded" },
+    "cry":      { "scene": "cry",      "expression": "cry",      "icon": "💧", "duration": 3800, "line": "……没事，只是眼睛进草了。", "frame": "cry" },
+    "stretch":  { "scene": "stretch",  "expression": "sleep",    "icon": "Z",  "duration": 1500, "line": "你回来啦，我刚伸完懒腰。", "frame": "stretch" },
+    "startle":  { "scene": "startle",  "expression": "shock",    "icon": "‼",  "duration": 1000, "line": "唔，吓一跳。",             "frame": "startle" },
+    "dizzy":    { "scene": "dizzy",    "expression": "shock",    "icon": "✦",  "duration": 2800, "line": "别转了……头晕。",           "frame": "shock", "trigger": "spin" },
+    "dance":    { "scene": "ciallo",   "expression": "happy",    "icon": "♪",  "duration": 3600, "line": "晃两下，算跳舞了。",       "frame": "dance", "multiFrame": true },
+    "jump":     { "scene": "fly",      "expression": "happy",    "icon": "↑",  "duration": 2200, "line": "蹦一下，证明还醒着。",     "frame": "fly" },
+    "cheer":    { "scene": "smug",     "expression": "happy",    "icon": "🎉", "duration": 2600, "line": "做到了，夸我一句就行。",   "frame": "cheer" },
+    "wonder":   { "scene": "neutral",  "expression": "curious",  "icon": "?",  "duration": 1800, "line": "嗯？这个角度有点意思。",   "frame": "wonder" },
+    "nap":      { "scene": "sleep",    "expression": "sleep",    "icon": "Z",  "duration": 5200, "line": "小眯一会儿，不扣钱的。",   "frame": "nap" },
+    "goAway":   { "scene": "go-away",  "expression": "smug",     "icon": "♡",  "duration": 2100, "line": "去别处玩吧，我要静一静。", "frame": "goAway" }
+  },
+  "scenePlans": {
+    "sleep":     ["sleep", "sleep", "dream", "nap"],
+    "morning":   ["walk", "stretch", "hungry", "ciallo", "cheer"],
+    "focus":     ["work", "coffee", "think", "panic", "dance"],
+    "lunch":     ["hungry", "wash", "feed", "sit", "wonder"],
+    "afternoon": ["work", "toy", "walk", "smug", "jump", "dance"],
+    "evening":   ["walk", "toy", "coffee", "sit", "wonder"],
+    "default":   ["walk", "toy", "think", "jump"]
+  },
+  "multiFrameActions": {
+    "ciallo": { "frames": ["ciallo", "ciallo-b"], "intervals": [420, 420] },
+    "dance":  { "frames": ["ciallo", "ciallo-b", "smug", "ciallo-b"], "intervals": [300, 300, 380, 300] }
+  },
+  "poseScale": {
+    "_note": "从模板 PetView.poseVisualScale() 精确抽出，由 PetManifest.poseScale() 读取；换正式素材后按实际轮廓重调。",
+    "groups": [
+      { "ids": ["curious"], "value": 1.05 },
+      { "ids": ["shy", "wave", "ciallo", "goAway"], "value": 0.89 },
+      { "ids": ["happy", "excited", "price", "toy", "pat", "feed", "smug", "walk", "walk-b"], "value": 0.92 },
+      { "ids": ["surprised", "shock", "panic", "trip", "stranded", "startle", "angry", "rival", "pressure", "sleepy", "sleep", "stretch", "work", "wash", "coffee", "hungry", "think"], "value": 0.91 },
+      { "ids": ["jump", "fly"], "value": 0.84 }
+    ],
+    "default": 1.0
+  }
+}

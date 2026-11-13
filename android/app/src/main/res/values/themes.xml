@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.Lulu" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/lulu_brown</item>
+        <item name="android:statusBarColor">@color/bg_main</item>
+    </style>
+
+    <style name="Theme.Lulu.Dialog" parent="Theme.Material3.Light.Dialog">
+        <item name="colorPrimary">@color/lulu_brown</item>
+    </style>
+</resources>

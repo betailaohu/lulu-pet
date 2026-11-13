@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "character": "lulu",
+  "_note": "双端共用的养成/状态配置。Android 端目前仍由 Kotlin 硬编码，接入方式见 android/MIGRATION.md。",
+  "bodyClock": [
+    { "id": "sleep",     "label": "呼呼大睡", "energy": 0.16, "from": 0,  "to": 6,  "line": "Zzz……先睡了，有事明天讲。" },
+    { "id": "morning",   "label": "刚刚醒来", "energy": 0.58, "from": 6,  "to": 9,  "line": "早上好，先伸个懒腰。" },
+    { "id": "focus",     "label": "慢慢营业", "energy": 0.92, "from": 9,  "to": 12, "line": "今天也……稍微动一下吧。" },
+    { "id": "lunch",     "label": "找草吃",   "energy": 0.64, "from": 12, "to": 14, "line": "到饭点了，草呢？" },
+    { "id": "afternoon", "label": "下午发呆", "energy": 0.76, "from": 14, "to": 18, "line": "先假装思考三秒。" },
+    { "id": "evening",   "label": "陪你加班", "energy": 0.72, "from": 18, "to": 23, "line": "夜色不错，一起静一静。" },
+    { "id": "sleep",     "label": "开始犯困", "energy": 0.22, "from": 23, "to": 24, "line": "很晚啦，答案明天也不会跑。" }
+  ],
+  "stats": {
+    "satiety":  { "label": "饱食度", "max": 100, "initial": 70, "decayPerHour": 6, "lowThreshold": 30, "lowBehavior": "hungry" },
+    "mood":     { "label": "心情",   "max": 100, "initial": 75, "decayPerHour": 3, "lowThreshold": 25, "lowBehavior": "cry" },
+    "affinity": { "label": "亲密度", "max": 100, "initial": 10, "gainPerPat": 1, "gainPerFeed": 3, "maxGainPerDay": 20 }
+  },
+  "idle": {
+    "minIntervalMs": 6000,
+    "maxIntervalMs": 14000,
+    "behaviorSource": "manifest.json#scenePlans"
+  },
+  "interactions": {
+    "tap":        { "type": "behavior", "value": "pat", "note": "单击摸头" },
+    "doubleTap":  { "type": "action", "value": "openChat" },
+    "drag":       { "type": "action", "value": "move", "snapToEdge": true },
+    "spin":       { "type": "behavior", "value": "dizzy", "note": "快速绕圈手势" },
+    "screenOff":  { "type": "action", "value": "pauseRendering" },
+    "screenOn":   { "type": "behavior", "value": "stretch" },
+    "longPress":  { "type": "action", "value": "openSettings" }
+  },
+  "statusText": [
+    { "id": "hungry", "text": "噜噜有点饿了",   "condition": "satiety < 30" },
+    { "id": "sleepy", "text": "噜噜在打瞌睡",   "condition": "phase == sleep" },
+    { "id": "sad",    "text": "噜噜有点低落",   "condition": "mood < 25" },
+    { "id": "happy",  "text": "噜噜今天很松弛", "condition": "mood >= 70" },
+    { "id": "default", "text": "噜噜正在发呆",  "condition": "always" }
+  ],
+  "widget": {
+    "appGroupId": "group.com.lulu.pet",
+    "small":      { "frame": "neutral", "title": "噜噜",     "subtitle": "{statusText}" },
+    "medium":     { "frame": "neutral", "title": "水豚噜噜", "subtitle": "{statusText}", "stats": ["satiety", "mood"] },
+    "lockScreen": { "frame": "neutral", "text": "{statusText}" },
+    "refreshNote": "WidgetKit 刷新由系统调度（典型 40–70 次/24h），不要按秒级动画设计；仅在主 App 写入 App Group 后调用 WidgetCenter.reloadAllTimelines()。"
+  },
+  "liveActivity": {
+    "note": "灵动岛定位是「进行中的临时事件」，常驻有审核风险。建议设成有时长、有明确结束条件的活动。",
+    "maxAnimationSeconds": 2,
+    "compact":   { "frame": "neutral", "text": "{statusText}" },
+    "expanded":  { "frame": "neutral", "title": "水豚噜噜", "text": "{statusText}", "stats": ["satiety"] }
+  }
+}

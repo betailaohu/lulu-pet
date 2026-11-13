@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "character": "水豚噜噜",
+  "note": "形象设定来自 web 公开资料调研（水豚噜噜 / Capylulu，版权方铁罐(北京)文化传媒有限公司）。提示词用于 AI 生成风格近似的原创绘制，不是官方素材，也没有复制任何网络成品图；逐张按同名覆盖 frame-<id>.png 即可替换。",
+  "spec": {
+    "canvas": [512, 512],
+    "anchor": [256, 480],
+    "format": "RGBA PNG / WebP",
+    "naming": "frame-<id>.png",
+    "count": 36
+  },
+  "stylePrefix": "chibi cartoon capybara mascot Lulu, round plump mango-yellow body, short limbs, small round ears, large black dot eyes, wide flat muzzle, gentle toothy grin, a small orange with green leaf on top of head, warm pale yellow-brown fur, calm relaxed unhurried expression, soft flat 2D vector illustration, clean even brown outlines, pastel warm palette, full body, centered, plain white background, single character, no text, no watermark, no shadow, consistent mascot design",
+  "negativePrompt": "photorealistic, 3d render, realistic fur texture, watermark, text, logo, signature, multiple characters, extra limbs, human body, clothing, busy background, gradient background, cast shadow on ground, harsh highlights, deformed face, cropped body, chibi human",
+  "promptRule": "完整提示词 = stylePrefix + ', ' + 该帧 prompt + ；negativePrompt 单独作为负向提示词。所有帧必须使用完全相同的 stylePrefix。",
+  "priority": {
+    "P0": "核心状态 15 张，已全部由 AI 生成并安装（见 assetStatus）",
+    "P1": "第二批：日常互动与情绪表达",
+    "P2": "第三批：低频彩蛋动作"
+  },
+  "assetStatus": {
+    "aiGenerated": 15,
+    "reused": 21,
+    "installed": true,
+    "provenance": "asset_provenance.json",
+    "workflow": "web 形象调研 → ImageGen 生成核心帧 → process_ai_assets.py 抠白底/对齐锚点 → fill_remaining.py 语义复用补齐 → install_assets.py 安装并同步双端"
+  },
+  "frames": [
+    {"id": "neutral", "behaviors": ["默认待机"], "pose": "端坐，正面朝向观众，四爪收在身下", "expression": "平静豆豆眼，嘴角微微上扬", "prop": "头顶一枚小橘子", "prompt": "sitting upright facing viewer, calm dot eyes, slight smile, a small orange balanced on top of head", "priority": "P0"},
+    {"id": "blink", "behaviors": ["眨眼"], "pose": "与 neutral 完全相同的坐姿和位置", "expression": "双眼闭成两条弯弯的横线", "prop": "同 neutral", "prompt": "same sitting pose as neutral, both eyes closed as two curved horizontal lines, everything else identical", "priority": "P0"},
+    {"id": "walk", "behaviors": ["walk"], "pose": "四足站立迈步，左前爪抬起，身体略微前倾", "expression": "平静，视线朝前", "prop": "无", "prompt": "standing on four legs mid-step, left front paw lifted, body leaning slightly forward, looking ahead", "priority": "P0"},
+    {"id": "walk-b", "behaviors": ["walk 第二帧"], "pose": "与 walk 镜像：右前爪抬起，重心略下沉", "expression": "同 walk", "prop": "无", "prompt": "mirror of walk frame, right front paw lifted, weight slightly lower, same scale and camera angle", "priority": "P0"},
+    {"id": "sleep", "behaviors": ["sleep", "dream"], "pose": "整只趴下，肚子贴地，头枕在前爪上", "expression": "双眼闭合，完全放松", "prop": "头顶三枚渐小的 Z 字", "prompt": "lying flat on belly, head resting on front paws, eyes closed, three small Z symbols floating above head", "priority": "P0"},
+    {"id": "nap", "behaviors": ["nap"], "pose": "半趴打盹，身体比 sleep 略抬高", "expression": "半闭眼，快要睡着", "prop": "一枚小 Z 字", "prompt": "half-lying dozing posture, body slightly raised, heavy-lidded eyes, one small Z above head", "priority": "P0"},
+    {"id": "pat", "behaviors": ["pat / 单击摸头"], "pose": "坐姿，头微微低下配合被摸", "expression": "眯眼享受，双颊明显腮红", "prop": "头顶一只柔和的小手或一颗粉色爱心", "prompt": "sitting, head tilted slightly down being petted, eyes narrowed in bliss, pink cheek blushes, a soft small hand or pink heart above head", "priority": "P0"},
+    {"id": "shy", "behaviors": ["shy"], "pose": "坐姿，身体微微后缩，双爪抬到脸侧", "expression": "眼神飘开，双颊通红", "prop": "两颗粉色爱心", "prompt": "sitting, body shrinking back slightly, both paws raised near cheeks, looking away, strong pink blush, two small pink hearts", "priority": "P0"},
+    {"id": "hungry", "behaviors": ["hungry"], "pose": "坐姿，肚子略扁，一只爪搭在肚子上", "expression": "八字眉，眼神空空", "prop": "面前一只空碗", "prompt": "sitting, slightly flattened belly, one paw on belly, worried slanted brows, empty bowl in front", "priority": "P0"},
+    {"id": "feed", "behaviors": ["feed"], "pose": "坐姿前倾，凑向食碗", "expression": "眼睛亮起来，开心微笑", "prop": "面前一只装满草料的小碗", "prompt": "sitting leaning forward toward a small bowl full of fresh grass, bright happy eyes, smiling", "priority": "P0"},
+    {"id": "think", "behaviors": ["think"], "pose": "坐姿，一只前爪托着下巴", "expression": "一只眼略眯，眉头轻皱", "prop": "头顶一个小问号", "prompt": "sitting with one front paw under chin, one eye slightly narrowed, small question mark above head", "priority": "P0"},
+    {"id": "wonder", "behaviors": ["wonder"], "pose": "头明显歪向一侧，身体保持坐姿", "expression": "一只眼睁大一只眼略小，好奇", "prop": "头顶一个小问号", "prompt": "head tilted noticeably to one side, one eye wide and one slightly smaller, curious look, small question mark", "priority": "P0"},
+    {"id": "startle", "behaviors": ["startle"], "pose": "身体微微后仰，前爪抬起", "expression": "眼睛骤然睁大，嘴微张", "prop": "一枚黄色感叹号", "prompt": "body leaning back slightly, front paws lifted, eyes suddenly wide, mouth slightly open, small yellow exclamation mark", "priority": "P0"},
+    {"id": "stretch", "behaviors": ["stretch / 亮屏"], "pose": "前爪向前伸展，脊背拉长，屁股微翘", "expression": "闭眼，慵懒", "prop": "一枚小 Z 字", "prompt": "front paws stretched forward, spine elongated, hips slightly raised, eyes closed, lazy yawn, one small Z", "priority": "P0"},
+    {"id": "sit", "behaviors": ["sit"], "pose": "端端正正坐好，尾巴收在身侧", "expression": "眯眼满足，嘴角平缓", "prop": "无", "prompt": "neat upright sitting posture, tail tucked to side, content narrowed eyes, calm mouth", "priority": "P0"},
+
+    {"id": "ciallo", "behaviors": ["ciallo"], "pose": "坐姿，一只前爪抬起打招呼", "expression": "单眼 wink，嘴角上扬", "prop": "无", "prompt": "sitting, one front paw raised in greeting, winking one eye, cheerful smile", "priority": "P1"},
+    {"id": "ciallo-b", "behaviors": ["ciallo / dance 循环帧"], "pose": "双爪举高，身体轻晃", "expression": "双眼弯成月牙，笑得开心", "prop": "一颗粉色爱心", "prompt": "both front paws raised high, body swaying, both eyes curved into happy crescents, one pink heart", "priority": "P1"},
+    {"id": "coffee", "behaviors": ["coffee"], "pose": "坐姿，双爪捧着一只小杯子", "expression": "半闭眼，困但满足", "prop": "冒热气的小杯子", "prompt": "sitting holding a small steaming cup with both paws, half-lidded sleepy but content eyes", "priority": "P1"},
+    {"id": "cry", "behaviors": ["cry"], "pose": "坐姿，头略低", "expression": "大颗泪珠挂在眼下，嘴角下垂", "prop": "两滴蓝色泪珠", "prompt": "sitting with head slightly lowered, large blue teardrops under eyes, downturned mouth", "priority": "P1"},
+    {"id": "smug", "behaviors": ["smug"], "pose": "坐姿，下巴微微抬起", "expression": "半闭眼，一侧嘴角上扬", "prop": "无", "prompt": "sitting with chin slightly raised, half-lidded eyes, one corner of mouth smirking", "priority": "P1"},
+    {"id": "shock", "behaviors": ["shock", "dizzy"], "pose": "坐姿，身体僵住", "expression": "眼白放大、瞳孔缩成小点，嘴张成小圆", "prop": "无", "prompt": "sitting frozen, eyes widened with tiny pupils, mouth open in a small round O", "priority": "P1"},
+    {"id": "toy", "behaviors": ["toy"], "pose": "侧躺抱着一个小圆玩偶", "expression": "眯眼，心情很好", "prop": "橘子形状的小玩偶", "prompt": "lying on side hugging a small round orange-shaped plush toy, narrowed happy eyes", "priority": "P1"},
+    {"id": "wash", "behaviors": ["wash"], "pose": "半身浸在温泉水面下，只露头顶和前爪", "expression": "眯眼，彻底放松", "prop": "水面波纹 + 头顶小毛巾/橘子", "prompt": "half submerged in a hot spring, only head and front paws above water line, eyes closed in bliss, small towel or orange on head", "priority": "P1"},
+    {"id": "work", "behaviors": ["work"], "pose": "趴在一张小矮桌前，头快贴到桌面", "expression": "眼皮沉重，快睡着", "prop": "小矮桌 + 一张纸", "prompt": "lying prone in front of a tiny low table, head nearly resting on tabletop, heavy sleepy eyelids, one sheet of paper", "priority": "P1"},
+    {"id": "angry", "behaviors": ["angry"], "pose": "坐姿，头缓缓转向一侧不看你", "expression": "眉毛压低，脸颊鼓起", "prop": "一枚红色小十字/怒气符号", "prompt": "sitting, head turned away to one side, lowered brows, puffed cheeks, small red anger mark", "priority": "P1"},
+    {"id": "goAway", "behaviors": ["goAway"], "pose": "背对观众侧身坐着，尾巴朝向画面", "expression": "侧脸半闭眼，懒得理会", "prop": "一只挥别的小爪", "prompt": "sitting turned away from viewer in three-quarter back view, tail toward camera, lazy half-lidded side glance, one paw waving dismissively", "priority": "P1"},
+    {"id": "jump", "behaviors": ["jump"], "pose": "四足离地向上蹦，身体整体比 neutral 高约 40px", "expression": "开心，眼睛弯弯", "prop": "下方一朵小云", "prompt": "all four paws off the ground in a small upward hop, body positioned higher in frame, happy curved eyes, tiny cloud below", "priority": "P1"},
+    {"id": "fly", "behaviors": ["fly"], "pose": "腾空最高点，四爪微微张开", "expression": "兴奋但依旧松弛", "prop": "下方两朵小云", "prompt": "at the peak of a hop, all paws slightly spread, excited but relaxed, two small clouds below", "priority": "P1"},
+    {"id": "cheer", "behaviors": ["cheer"], "pose": "坐姿，双爪高举", "expression": "眼睛亮亮，开心笑", "prop": "几片彩色小纸屑", "prompt": "sitting with both front paws raised high, bright happy eyes, a few small colorful confetti pieces in air", "priority": "P1"},
+    {"id": "dance", "behaviors": ["dance"], "pose": "身体左右摇摆，一只爪抬起一只爪落下", "expression": "笑眼", "prop": "一颗粉色爱心 + 小音符", "prompt": "body swaying side to side, one paw up one paw down, happy curved eyes, one pink heart and a tiny music note", "priority": "P1"},
+
+    {"id": "panic", "behaviors": ["panic"], "pose": "坐姿，身体绷紧微微后缩", "expression": "瞳孔缩小，眼神慌张", "prop": "一滴蓝色汗珠", "prompt": "sitting, body tense and shrinking back, small pupils, flustered look, one blue sweat drop", "priority": "P2"},
+    {"id": "pressure", "behaviors": ["pressure"], "pose": "坐姿，肩膀下沉", "expression": "眼皮下垂，疲惫", "prop": "头顶一小朵灰云", "prompt": "sitting with shoulders slumped, droopy eyelids, a small gray cloud above head", "priority": "P2"},
+    {"id": "price", "behaviors": ["price"], "pose": "坐姿，下巴抬起", "expression": "得意的半闭眼", "prop": "嘴里叼着一根草", "prompt": "sitting with chin raised, smug half-lidded eyes, a single blade of grass held in mouth", "priority": "P2"},
+    {"id": "rival", "behaviors": ["rival"], "pose": "坐姿，身体侧转", "expression": "斜眼瞥向一侧", "prop": "旁边一个模糊的小影子", "prompt": "sitting turned sideways, sideways glare, a faint small silhouette beside it", "priority": "P2"},
+    {"id": "stranded", "behaviors": ["stranded"], "pose": "侧躺搁浅，四爪朝外摊开", "expression": "眼神无助，嘴角下垂", "prop": "一滴蓝色泪珠", "prompt": "lying stranded on side, all paws splayed outward, helpless look, one blue teardrop", "priority": "P2"},
+    {"id": "trip", "behaviors": ["trip"], "pose": "前倾绊倒，身体失衡", "expression": "眼睛睁大，措手不及", "prop": "一枚黄色感叹号", "prompt": "stumbling forward off balance, body tipping, wide startled eyes, small yellow exclamation mark", "priority": "P2"}
+  ]
+}

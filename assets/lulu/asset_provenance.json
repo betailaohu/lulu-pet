@@ -1,0 +1,63 @@
+{
+  "method": "web 形象调研 + AI 生成核心帧 + 语义复用补齐",
+  "sourceResearch": {
+    "ip": "水豚噜噜（Capylulu / 噜噜）",
+    "copyrightHolder": "铁罐(北京)文化传媒有限公司",
+    "origin": "动画《平头哥》少年篇配角，2024 年 3 月推出",
+    "visualTraits": [
+      "圆滚滚的奶黄 / 浅棕色身体（芒果般造型）",
+      "头顶一颗带绿叶的小橘子",
+      "大而黑的眼睛、短小四肢、宽平口鼻",
+      "标志性漏齿笑",
+      "佛系淡定、慢条斯理，喜欢泡温泉、吃橘子、吃冰淇淋"
+    ],
+    "references": [
+      "https://baike.baidu.com/item/%E6%B0%B4%E8%B1%9A%E5%99%9C%E5%99%9C/66823728",
+      "https://www.wikizero.org/wiki/zh/%E6%B0%B4%E8%B1%9A%E5%99%9C%E5%99%9C",
+      "https://m.toutiao.com/article/7658550916395663914"
+    ],
+    "usage": "web 仅用于提取形象设定与气质参考；没有下载或复制任何官方 / 同人成品图片。"
+  },
+  "aiGenerated": [
+    "blink",
+    "feed",
+    "hungry",
+    "nap",
+    "neutral",
+    "pat",
+    "shy",
+    "sit",
+    "sleep",
+    "startle",
+    "stretch",
+    "think",
+    "walk",
+    "walk-b",
+    "wonder"
+  ],
+  "reused": {
+    "angry": "startle",
+    "ciallo": "sit",
+    "ciallo-b": "pat",
+    "coffee": "think",
+    "cry": "shy",
+    "fly": "stretch",
+    "goAway": "walk-b",
+    "panic": "startle",
+    "pressure": "think",
+    "price": "sit",
+    "rival": "startle",
+    "shock": "startle",
+    "smug": "sit",
+    "stranded": "stretch",
+    "toy": "feed",
+    "trip": "startle",
+    "wash": "sleep",
+    "work": "think",
+    "dance": "pat",
+    "cheer": "pat",
+    "jump": "startle"
+  },
+  "postProcess": "process_ai_assets.py：flood-fill 抠白底 → 缩放到 512x512 → 脚底对齐 (256,480)",
+  "licenseNote": "本项目定位为非商业、非官方同人作品。AI 生成图是风格近似的原创绘制，不是官方素材，不包含任何从网络抓取的成品图。若日后计划商业化或公开分发，须先取得版权方授权并改用官方素材。"
+}

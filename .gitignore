@@ -1,0 +1,27 @@
+# ---- 构建产物 ----
+android/build/
+android/app/build/
+android/.gradle/
+android/local.properties
+ios/build/
+ios/*.xcodeproj/
+ios/*.xcworkspace/
+ios/LuluPet-unsigned.ipa
+dist/
+build/
+
+# ---- 调研 / 模板缓存（不进仓库，需要时脚本重新下载）----
+.research/templates/
+
+# ---- 素材中间产物（正式帧在 assets/lulu/frame-*.png，这两个目录只是处理过程）----
+assets/lulu/ai_raw/
+assets/lulu/ai_processed/
+assets/lulu/ai_generated/
+
+# ---- 本地产物 / 编辑器 ----
+.workbuddy/memory/
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/
+*.pyc

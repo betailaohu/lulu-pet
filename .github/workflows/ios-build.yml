@@ -1,0 +1,99 @@
+name: iOS Build
+
+# 在 GitHub 的 macOS 机器上出未签名 .ipa。
+# 本机是 Windows，Xcode 只能在 macOS 上跑，所以这条路是「没有 Mac 也能拿到 ipa」的唯一办法。
+#
+# 用法：把仓库推到 GitHub → Actions → iOS Build → Run workflow
+# 产物：Artifacts 里的 LuluPet-unsigned-ipa（里面是用 Payload/ 目录打成的 .ipa）
+# 拿到后用 Windows 上的 Sideloadly 用自己的 Apple ID 重签安装，步骤见 ios/打包与安装指南.md
+
+on:
+  push:
+    paths:
+      - "ios/**"
+      - "shared/**"
+      - "assets/lulu/**"
+      - "android/**"
+      - ".github/workflows/ios-build.yml"
+  workflow_dispatch:
+    inputs:
+      strip_app_group:
+        description: "去掉 App Group 权限（免费 Apple ID 侧载报权限错误时勾选）"
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 选最新的 Xcode
+        run: |
+          LATEST=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$LATEST" ]; then sudo xcode-select -s "$LATEST"; fi
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          sw_vers
+
+      - name: 安装 XcodeGen
+        run: brew install xcodegen
+
+      - name: 同步素材与配置（以 shared/ 为唯一事实源）
+        run: python3 assets/lulu/sync_assets.py
+
+      - name: 去掉 App Group 权限（可选）
+        if: inputs.strip_app_group
+        run: |
+          for f in ios/PetApp/PetApp.entitlements ios/PetWidget/PetWidget.entitlements; do
+            /usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$f" 2>/dev/null || true
+            cat "$f"
+          done
+
+      - name: 生成 Xcode 工程
+        working-directory: ios
+        run: |
+          xcodegen generate
+          xcodebuild -list -project LuluPet.xcodeproj
+
+      - name: 编译（不签名）
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LuluPet.xcodeproj \
+            -scheme PetApp \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build > build.log 2>&1 || { tail -200 build.log; exit 1; }
+          tail -20 build.log
+
+      - name: 打包成未签名 ipa
+        working-directory: ios
+        run: |
+          APP="build/DerivedData/Build/Products/Release-iphoneos/PetApp.app"
+          test -d "$APP" || { echo "找不到 $APP"; find build -name "*.app" -maxdepth 6; exit 1; }
+          ls -la "$APP"
+          if [ -d "$APP/PlugIns" ]; then ls -la "$APP/PlugIns"; else echo "[WARN] 没有 PlugIns，小组件没被打进主包"; fi
+          rm -rf build/Payload LuluPet-unsigned.ipa
+          mkdir -p build/Payload
+          cp -R "$APP" build/Payload/
+          (cd build && zip -qry ../LuluPet-unsigned.ipa Payload)
+          ls -lh LuluPet-unsigned.ipa
+          unzip -l LuluPet-unsigned.ipa | head -20
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: LuluPet-unsigned-ipa
+          path: |
+            ios/LuluPet-unsigned.ipa
+            ios/build.log
+          if-no-files-found: error
+          retention-days: 30
