@@ -31,14 +31,22 @@ jobs:
           java-version: '17'
           cache: gradle
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install SDK packages
-        run: sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
-
-      - name: Accept licenses
-        run: yes | sdkmanager --licenses > /dev/null || true
+      - name: Prepare Android SDK
+        # ubuntu-latest 镜像自带 Android SDK，直接用，不再装第三方 setup-android。
+        # 只在缺 platform-34 / build-tools 34.0.0 时补装。
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          echo "--- 现有 platforms ---"; ls "$ANDROID_HOME/platforms" || true
+          echo "--- 现有 build-tools ---"; ls "$ANDROID_HOME/build-tools" || true
+          SDKMANAGER=$(command -v sdkmanager || echo "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager")
+          if [ ! -d "$ANDROID_HOME/platforms/android-34" ]; then
+            yes | "$SDKMANAGER" --install "platforms;android-34" > /dev/null
+          fi
+          if [ ! -d "$ANDROID_HOME/build-tools/34.0.0" ]; then
+            yes | "$SDKMANAGER" --install "build-tools;34.0.0" > /dev/null
+          fi
+          echo "--- 最终 ---"; ls "$ANDROID_HOME/platforms"; ls "$ANDROID_HOME/build-tools"
 
       - name: Static project checks (no build needed)
         run: |
