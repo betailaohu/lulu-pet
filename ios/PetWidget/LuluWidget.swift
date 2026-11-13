@@ -1,5 +1,6 @@
 import WidgetKit
 import SwiftUI
+import UIKit
 
 struct LuluEntry: TimelineEntry {
     let date: Date

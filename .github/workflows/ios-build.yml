@@ -1,11 +1,17 @@
 name: iOS Build
 
-# 在 GitHub 的 macOS 机器上出未签名 .ipa。
-# 本机是 Windows，Xcode 只能在 macOS 上跑，所以这条路是「没有 Mac 也能拿到 ipa」的唯一办法。
+# 在 GitHub 的 macOS 机器上出「未签名 .ipa」。
+# 本机是 Windows，Xcode 只能在 macOS 上跑，这是没有 Mac 也能拿到 ipa 的唯一办法。
 #
 # 用法：把仓库推到 GitHub → Actions → iOS Build → Run workflow
-# 产物：Artifacts 里的 LuluPet-unsigned-ipa（里面是用 Payload/ 目录打成的 .ipa）
-# 拿到后用 Windows 上的 Sideloadly 用自己的 Apple ID 重签安装，步骤见 ios/打包与安装指南.md
+# 产物：Artifacts 里的 LuluPet-unsigned-ipa，里面是 LuluPet-unsigned.ipa
+# 拿到后用 Windows 上的 Sideloadly 填自己的 Apple ID 重签安装，
+# 步骤见 ios/打包与安装指南.md
+#
+# 默认出「纯主 App」包（不含桌面小组件）：
+#   免费 Apple ID 只能签主 App，包内嵌 Widget Extension 会导致重签失败装不上；
+#   而且免费账号拿不到 App Groups，小组件本来也读不到数据。
+# 有付费开发者账号时，勾选 include_widget + include_app_group 出全量包。
 
 on:
   push:
@@ -13,12 +19,15 @@ on:
       - "ios/**"
       - "shared/**"
       - "assets/lulu/**"
-      - "android/**"
       - ".github/workflows/ios-build.yml"
   workflow_dispatch:
     inputs:
-      strip_app_group:
-        description: "去掉 App Group 权限（免费 Apple ID 侧载报权限错误时勾选）"
+      include_widget:
+        description: "打含桌面小组件的全量包（需要付费开发者账号）"
+        type: boolean
+        default: false
+      include_app_group:
+        description: "保留 App Group 能力（需要付费开发者账号）"
         type: boolean
         default: false
 
@@ -38,24 +47,41 @@ jobs:
           xcrun --sdk iphoneos --show-sdk-version
           sw_vers
 
-      - name: 安装 XcodeGen
-        run: brew install xcodegen
+      - name: 安装 XcodeGen 与 PyYAML
+        run: |
+          brew install xcodegen
+          python3 -m pip install --quiet --break-system-packages pyyaml || python3 -m pip install --quiet pyyaml
 
       - name: 同步素材与配置（以 shared/ 为唯一事实源）
         run: python3 assets/lulu/sync_assets.py
 
-      - name: 去掉 App Group 权限（可选）
-        if: inputs.strip_app_group
+      - name: 决定出哪种包
+        id: variant
+        run: |
+          if [ "${{ inputs.include_widget }}" = "true" ]; then
+            echo "spec=project.yml" >> "$GITHUB_OUTPUT"
+            echo "name=LuluPet-full-widget-ipa" >> "$GITHUB_OUTPUT"
+            echo "### 出包类型：全量（主 App + 小组件）" >> "$GITHUB_STEP_SUMMARY"
+          else
+            python3 ios/scripts/make_apponly_project.py
+            echo "spec=project-apponly.yml" >> "$GITHUB_OUTPUT"
+            echo "name=LuluPet-unsigned-ipa" >> "$GITHUB_OUTPUT"
+            echo "### 出包类型：纯主 App（免费账号可侧载）" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: 去掉 App Group 权限（免费账号必须）
+        if: ${{ !inputs.include_app_group }}
         run: |
           for f in ios/PetApp/PetApp.entitlements ios/PetWidget/PetWidget.entitlements; do
+            [ -f "$f" ] || continue
             /usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$f" 2>/dev/null || true
-            cat "$f"
+            echo "--- $f"; cat "$f"
           done
 
       - name: 生成 Xcode 工程
         working-directory: ios
         run: |
-          xcodegen generate
+          xcodegen generate --spec "${{ steps.variant.outputs.spec }}"
           xcodebuild -list -project LuluPet.xcodeproj
 
       - name: 编译（不签名）
@@ -71,7 +97,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            build > build.log 2>&1 || { tail -200 build.log; exit 1; }
+            build > build.log 2>&1 || { echo "===== 编译失败，最后 200 行 ====="; tail -200 build.log; exit 1; }
           tail -20 build.log
 
       - name: 打包成未签名 ipa
@@ -79,19 +105,20 @@ jobs:
         run: |
           APP="build/DerivedData/Build/Products/Release-iphoneos/PetApp.app"
           test -d "$APP" || { echo "找不到 $APP"; find build -name "*.app" -maxdepth 6; exit 1; }
-          ls -la "$APP"
-          if [ -d "$APP/PlugIns" ]; then ls -la "$APP/PlugIns"; else echo "[WARN] 没有 PlugIns，小组件没被打进主包"; fi
+          echo "--- 包内容 ---"; ls -la "$APP"
+          echo "--- 立绘帧数 ---"; ls "$APP"/*.png 2>/dev/null | wc -l
+          if [ -d "$APP/PlugIns" ]; then echo "--- 插件 ---"; ls -la "$APP/PlugIns"; else echo "[INFO] 无 PlugIns（纯主 App 包，符合预期）"; fi
           rm -rf build/Payload LuluPet-unsigned.ipa
           mkdir -p build/Payload
           cp -R "$APP" build/Payload/
           (cd build && zip -qry ../LuluPet-unsigned.ipa Payload)
           ls -lh LuluPet-unsigned.ipa
-          unzip -l LuluPet-unsigned.ipa | head -20
+          echo "--- ipa 头部 ---"; unzip -l LuluPet-unsigned.ipa | head -12
 
       - name: 上传产物
         uses: actions/upload-artifact@v4
         with:
-          name: LuluPet-unsigned-ipa
+          name: ${{ steps.variant.outputs.name }}
           path: |
             ios/LuluPet-unsigned.ipa
             ios/build.log

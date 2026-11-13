@@ -40,10 +40,10 @@ targets:
       - path: Shared
       - path: PetLiveActivity
       - path: Resources
-    entitlements:
-      path: PetApp/PetApp.entitlements
-    info:
-      path: PetApp/Info.plist
+    # 注意：这里绝对不能写 `info:` / `entitlements:`。
+    # 那两个键是「生成指令」，xcodegen generate 时会用默认内容覆写掉手写的 plist，
+    # 结果是 NSSupportsLiveActivities 和 App Group 能力全部消失。
+    # 手写文件用下面的 build setting 直接引用即可。
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lulu.pet.app
@@ -64,15 +64,12 @@ targets:
       - path: Resources
         excludes:
           - "Assets.xcassets"   # 图标只属于主 App，扩包里再编一份会报 AppIcon 缺失
-    entitlements:
-      path: PetWidget/PetWidget.entitlements
-    info:
-      path: PetWidget/Info.plist
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lulu.pet.widget
         INFOPLIST_FILE: PetWidget/Info.plist
         CODE_SIGN_ENTITLEMENTS: PetWidget/PetWidget.entitlements
+        APPLICATION_EXTENSION_API_ONLY: "YES"
 
 # 显式声明 scheme：CI 里 `xcodebuild -scheme PetApp` 必须有它，
 # 否则只能靠 Xcode 打开时自动生成的 scheme，命令行构建会报 scheme not found。

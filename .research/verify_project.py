@@ -169,6 +169,31 @@ check("group.com.lulu.pet" in read(os.path.join(ios, "PetApp", "PetApp.entitleme
 check("group.com.lulu.pet" in read(os.path.join(ios, "PetWidget", "PetWidget.entitlements")),
       "App Group entitlement(Widget)")
 
+# project.yml 里的 info: / entitlements: 是「生成指令」，xcodegen generate 会覆写手写 plist，
+# 导致 NSSupportsLiveActivities 和 App Group 静默消失。这里做回归保护。
+check("\n    info:\n" not in proj and "\n    entitlements:\n" not in proj,
+      "project.yml 未使用 info/entitlements 生成指令（避免覆写手写 plist）")
+check("INFOPLIST_FILE: PetApp/Info.plist" in proj, "project.yml 用 INFOPLIST_FILE 引用手写 plist")
+check("CODE_SIGN_ENTITLEMENTS: PetApp/PetApp.entitlements" in proj,
+      "project.yml 用 CODE_SIGN_ENTITLEMENTS 引用手写 entitlement")
+
+# 免费 Apple ID 侧载：必须是纯主 App 包，不能带 .appex
+apponly = os.path.join(ios, "scripts", "make_apponly_project.py")
+check(os.path.isfile(apponly), "纯主 App spec 生成脚本存在")
+if os.path.isfile(apponly):
+    check("PetWidget" in read(apponly) and "pop(" in read(apponly),
+          "生成脚本会移除 PetWidget target")
+
+ios_ci = read(os.path.join(ROOT, ".github", "workflows", "ios-build.yml"))
+check("include_widget" in ios_ci, "iOS CI 提供 include_widget 开关")
+check("default: false" in ios_ci, "iOS CI 默认出纯主 App 包（免费账号可侧签）")
+check("make_apponly_project.py" in ios_ci, "iOS CI 会生成纯主 App spec")
+
+for f in ("PetApp/Views/PetView.swift", "PetWidget/LuluWidget.swift",
+          "PetLiveActivity/PetLiveActivity.swift"):
+    check("import UIKit" in read(os.path.join(ios, f)),
+          "显式 import UIKit: {}".format(f))
+
 ios_frames = os.path.join(ios, "Resources", "Frames")
 check(os.path.isdir(ios_frames) and frame_ids(ios_frames) == expected,
       "iOS Resources 帧集合与 manifest 一致")

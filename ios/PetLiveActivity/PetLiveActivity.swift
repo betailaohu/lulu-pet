@@ -1,6 +1,7 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import UIKit
 
 struct PetActivityAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
