@@ -79,6 +79,10 @@
 *.ear
 **/.gradle/
 
+# 例外：Gradle wrapper 的 jar 必须提交，否则 CI 上 ./gradlew 会报
+# Could not find or load main class org.gradle.wrapper.GradleWrapperMain
+!**/gradle/wrapper/gradle-wrapper.jar
+
 # C/C++/Go/Rust
 *.o
 *.obj
