@@ -66,6 +66,13 @@ final class PetState: ObservableObject {
 
     // MARK: - 配置（读 shared/state.json，失败则用内置默认值）
 
+    // Reconcile elapsed time when active, then update shared snapshots.
+    func refresh() {
+        tick()
+        statusText = computeStatusText()
+        publish()
+    }
+
     private func loadConfig() {
         guard let url = Bundle.main.url(forResource: "state", withExtension: "json"),
               let data = try? Data(contentsOf: url),
