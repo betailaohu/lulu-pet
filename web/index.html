@@ -39,16 +39,23 @@
     <div id="ground"></div>
   </main>
 
-  <footer id="actions">
-    <button class="act" data-act="pat"><span>摸摸</span></button>
-    <button class="act" data-act="feed"><span>喂草</span></button>
-    <button class="act" data-act="play"><span>逗它</span></button>
-  </footer>
+  <section id="chat">
+    <div id="msgs" class="msgs" aria-live="polite"></div>
+    <div class="quick">
+      <button class="act" data-act="pat">摸摸</button>
+      <button class="act" data-act="feed">喂草</button>
+      <button class="act" data-act="play">逗它</button>
+    </div>
+    <form id="chatForm" autocomplete="off">
+      <input id="chatInput" type="text" placeholder="跟噜噜说句话…" maxlength="200" enterkeyhint="send">
+      <button type="submit" id="btnSend">发送</button>
+    </form>
+  </section>
 
   <section id="login" class="sheet-inline">
     <div class="card">
       <h1>水豚噜噜</h1>
-      <p class="sub">登录后，这只噜噜的饱食度、心情和亲密度会存在云端 —— 你在手机上、电脑上打开，看到的是同一只。</p>
+      <p class="sub">登录后就能跟噜噜说话。它的饱食度、心情、亲密度会存在云端 —— 手机、电脑打开是同一只。</p>
       <button id="btnWechat" class="primary">微信一键登录</button>
       <button id="btnWorkbuddy" class="ghost">使用 WorkBuddy 账号登录</button>
       <p id="loginErr" class="err"></p>
